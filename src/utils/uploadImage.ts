@@ -1,8 +1,9 @@
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request } from 'express';
 import multer from 'multer';
 import AppError from './appError';
 import sharp from 'sharp';
 import { catchAsync } from './catchAsync';
+import mongoose from 'mongoose';
 
 class UploadImage {
   multerStorage = multer.memoryStorage();
@@ -24,41 +25,45 @@ class UploadImage {
     return this.upload.fields(imagesArray);
   }
 
-  resizeImages = (model: any, reqType: string,folder:string) =>
+  resizeImages = (model: any, path: string, folder: string, fullPath: string) =>
     catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      let body = { ...req.body };
       if (!req.files) return next();
+      if (req.params.id) {
+        const category = await model.findById(req.params.id);
+        if (!req.body.name && category) req.body.name = category.name;
+      }
       if ((req.files as { bannerImage: any }).bannerImage) {
         req.body.bannerImage = {
-          path: `images/${folder}`,
-          name: `${req.params.id}-banner.jpeg`,
+          path: path,
+          name: `${folder}-${req.body.name}-banner.jpeg`,
         };
 
         await sharp((req.files as { bannerImage: any }).bannerImage[0].buffer)
           .resize(2000, 1333)
           .toFormat('jpeg')
           .jpeg({ quality: 90 })
-          .toFile(`src/public/images/${folder}/${req.body.bannerImage.name}`);
+          .toFile(`${fullPath}/${req.body.bannerImage.name}`);
       }
 
       if ((req.files as { cardImage: any }).cardImage) {
         req.body.cardImage = {
-          path: `images/${folder}`,
-          name: `${req.params.id}-card.jpeg`,
+          path: 'images/category/',
+          name: `category-${req.body.name}-card.jpeg`,
         };
 
         await sharp((req.files as { cardImage: any }).cardImage[0].buffer)
           .resize(2000, 1333)
           .toFormat('jpeg')
           .jpeg({ quality: 90 })
-          .toFile(`src/public/images/${folder}/${req.body.cardImage.name}`);
+          .toFile(`src/public/images/category/${req.body.cardImage.name}`);
       }
-      if (reqType == 'update') return next();
-      const data = await model.findById(req.params.id);
+      if (req.params.id) {
+        req.body = body;
+      }
 
-      res.status(200).json({
-				status: "Success",
-				data: { data },
-			})
+      next();
     });
+    
 }
 export default new UploadImage();

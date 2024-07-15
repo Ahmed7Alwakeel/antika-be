@@ -24,17 +24,21 @@ const categorySchema = new mongoose.Schema<ICategory>(
         bannerImage: {
             path: {
                 type: String,
+                required: [true, "Banner image path is required"]
             },
             name: {
                 type: String,
+                required: [true, "Banner image name is required"]
             }
         },
         cardImage: {
             path: {
                 type: String,
+                required: [true, "card image path is required"]
             },
             name: {
                 type: String,
+                required: [true, "card image name is required"]
             }
         },
 		createdAt: {

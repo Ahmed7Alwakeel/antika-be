@@ -13,6 +13,16 @@ categoryRouter
   .post(
     authController.protect,
     authController.permittedTo('admin'),
+    uploadImage.uploadImage([
+      { name: 'bannerImage', maxCount: 1 },
+      { name: 'cardImage', maxCount: 1 },
+    ]),
+    uploadImage.resizeImages(
+      categoryModel,
+      'images/category/',
+      'category',
+      'src/public/images/category'
+    ),
     categoryController.createOne
   )
   .get(categoryController.getAll);
@@ -27,5 +37,15 @@ categoryRouter
   .patch(
     authController.protect,
     authController.permittedTo('admin'),
+    uploadImage.uploadImage([
+      { name: 'bannerImage', maxCount: 1 },
+      { name: 'cardImage', maxCount: 1 },
+    ]),
+    uploadImage.resizeImages(
+      categoryModel,
+      'images/category/',
+      'category',
+      'src/public/images/category'
+    ),
     categoryController.updateOne
   );

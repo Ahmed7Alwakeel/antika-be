@@ -11,12 +11,17 @@ productRouter
   .post(
     authController.protect,
     authController.permittedTo('admin'),
-    productController.createOne,
-      uploadImage.uploadImage([
-        { name: 'bannerImage', maxCount: 1 },
-        { name: 'cardImage', maxCount: 1 },
-      ]),
-      uploadImage.resizeImages(productModel,"post","product"),
+    uploadImage.uploadImage([
+      { name: 'bannerImage', maxCount: 1 },
+      { name: 'cardImage', maxCount: 1 },
+    ]),
+    uploadImage.resizeImages(
+      productModel,
+      'images/product/',
+      'product',
+      'src/public/images/product'
+    ),
+    productController.createOne
   )
   .get(productController.getAll);
 productRouter
@@ -34,6 +39,11 @@ productRouter
       { name: 'bannerImage', maxCount: 1 },
       { name: 'cardImage', maxCount: 1 },
     ]),
-    uploadImage.resizeImages(productModel,"update","product"),
+    uploadImage.resizeImages(
+      productModel,
+      'images/product/',
+      'product',
+      'src/public/images/product'
+    ),
     productController.updateOne
   );
