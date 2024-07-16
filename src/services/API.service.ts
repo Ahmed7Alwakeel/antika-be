@@ -24,6 +24,10 @@ class API {
 		})
 	}
 
+	renameImage = (oldPath: string, newPath: string) => {
+		fs.rename(oldPath, newPath, () => {})
+	}
+
 	createOne = (Model: any) =>
 		catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 			if (Model == productModel) {
@@ -35,8 +39,26 @@ class API {
 						)
 				}
 			}
-      console.log(Model,req.body)
+
 			const data = await Model.create({ ...req.body })
+
+			if (Model == productModel || Model == categoryModel) {
+				let pathName = `src/public/images/${
+					Model == productModel ? "product" : "category"
+				}`
+				this.renameImage(
+					path.join(pathName, data.bannerImage.name),
+					path.join(pathName, `${data._id}-banner.jpeg`)
+				)
+				this.renameImage(
+					path.join(pathName, data.cardImage.name),
+					path.join(pathName, `${data._id}-card.jpeg`)
+				)
+				data.bannerImage.name = `${data._id}-banner.jpeg`
+				data.cardImage.name = `${data._id}-card.jpeg`
+				await data.save({ validateBeforeSave: false })
+			}
+
 			res.status(201).json({
 				status: "Success",
 				data: { data },
@@ -45,30 +67,29 @@ class API {
 
 	getAll = (Model: any) =>
 		catchAsync(async (req: Request, res: Response) => {
-            let filter = {}
-            if (req.params.categoryId) filter={ category: req.params.categoryId }
-            const apiFiltration = new APIFiltration(Model.find(filter), req.query)
-            .filter()
-            .sort()
-            .paginate()
+			let filter = {}
+			if (req.params.categoryId) filter = { category: req.params.categoryId }
+			const apiFiltration = new APIFiltration(Model.find(filter), req.query)
+				.filter()
+				.sort()
+				.paginate()
 
 			let data = await apiFiltration.query
 
-            const metaData = {
-                page: apiFiltration.metaData().page,
-                limit: apiFiltration.metaData().limit,
-                no_of_pages:
-                    Math.floor(
-                        (await Model.countDocuments()) /
-                            apiFiltration.metaData().limit
-                    ) || 1,
-                results: data.length,
-            }
-			
+			const metaData = {
+				page: apiFiltration.metaData().page,
+				limit: apiFiltration.metaData().limit,
+				no_of_pages:
+					Math.floor(
+						(await Model.countDocuments()) / apiFiltration.metaData().limit
+					) || 1,
+				results: data.length,
+			}
+
 			res.status(200).json({
 				status: "Success",
 				data: { data },
-                metaData
+				metaData,
 			})
 		})
 
@@ -95,8 +116,8 @@ class API {
 			}
 
 			if (item.cardImage) {
-				this.deleteImageById(item.cardImage.name, folderName)
-				this.deleteImageById(item.bannerImage.name, folderName)
+				this.deleteImageById(req.params.id, folderName)
+				this.deleteImageById(req.params.id, folderName)
 			}
 			if (Model == categoryModel) {
 				await productModel.updateMany(
@@ -114,6 +135,7 @@ class API {
 
 	updateOne = (Model: any) =>
 		catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+			console.log(req.body)
 			const data = await Model.findOneAndUpdate(
 				{ _id: req.params.id },
 				req.body,
