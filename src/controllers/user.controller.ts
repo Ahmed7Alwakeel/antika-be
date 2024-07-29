@@ -32,6 +32,7 @@ class User {
 			})
 		}
 	)
+	
 	getAll = APIService.getAll(userModel);
 
 }

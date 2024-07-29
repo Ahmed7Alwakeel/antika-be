@@ -46,7 +46,6 @@ class ErrorHandler {
 		res: express.Response,
 		next: express.NextFunction
 	) => {
-		console.log(err)
 		let error = { ...err }
 		if (err.name === "CastError") error = this.handleCastErrorDB(error)
 		if (error.code === 11000) error = this.handleDuplicateFieldsDB(error)

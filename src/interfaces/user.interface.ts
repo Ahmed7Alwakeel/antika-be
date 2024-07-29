@@ -1,4 +1,5 @@
 export default interface IUser extends Document {
+	id?:string
 	name: string
 	password: string
 	passwordConfirm?: string

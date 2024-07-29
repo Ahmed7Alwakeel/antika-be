@@ -39,7 +39,7 @@ class API {
 						)
 				}
 			}
-
+			if (req.params.categoryId) req.body.category = req.params.categoryId
 			const data = await Model.create({ ...req.body })
 
 			if (Model == productModel || Model == categoryModel) {
@@ -96,6 +96,8 @@ class API {
 	getOne = (Model: any, populateOptions?: string, select?: string) =>
 		catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 			let query = Model.findById(req.params.id)
+
+			//populate for products that has parent ref of Category
 			if (populateOptions)
 				query = query.populate(populateOptions).select(select)
 			const data = await query
@@ -135,7 +137,6 @@ class API {
 
 	updateOne = (Model: any) =>
 		catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-			console.log(req.body)
 			const data = await Model.findOneAndUpdate(
 				{ _id: req.params.id },
 				req.body,

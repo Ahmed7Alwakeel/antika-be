@@ -51,6 +51,9 @@ const categorySchema = new mongoose.Schema<ICategory>(
 		toObject: { virtuals: true },
 	}
 )
+
+
+//for populate
 categorySchema.virtual("products", {
 	//name of the model
 	ref: "Product",
