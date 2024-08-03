@@ -7,7 +7,6 @@ export interface IRestaurant {
 	created_at?: Date
 	published: boolean
 	startLocation: {
-		// GeoJSON
 		type: string
 		coordinates: [Number]
 	}
