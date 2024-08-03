@@ -6,8 +6,8 @@ import path from "path"
 import categoryModel from "../models/category.model"
 import productModel from "../models/product.model"
 import APIFiltration from "../utils/apiFiltration"
-import restaurantModel from "../models/Restaurant.model"
 import mongoose from "mongoose"
+import restaurantModel from "../models/restaurant.model"
 
 class API {
 	deleteImageById = (pathName: string, folderName: string) => {
@@ -46,22 +46,18 @@ class API {
 				Model == productModel ? [...req.body] : { ...req.body }
 			)
 
-			if (Model == productModel || Model == categoryModel) {
-				let pathName = `src/public/images/${
-					Model == productModel ? "product" : "category"
-				}`
-				Model == categoryModel &&
-					this.renameImage(
-						path.join(pathName, data.bannerImage.name),
-						path.join(pathName, `${data._id}-banner.jpeg`)
-					)
+			if (Model == categoryModel) {
+				let pathName = `src/public/images/category`
+				this.renameImage(
+					path.join(pathName, data.bannerImage.name),
+					path.join(pathName, `${data._id}-banner.jpeg`)
+				)
 				this.renameImage(
 					path.join(pathName, data.cardImage.name),
 					path.join(pathName, `${data._id}-card.jpeg`)
 				)
 				data.cardImage.name = `${data._id}-card.jpeg`
-				if (Model == categoryModel)
-					data.bannerImage.name = `${data._id}-banner.jpeg`
+				data.bannerImage.name = `${data._id}-banner.jpeg`
 				await data.save({ validateBeforeSave: false })
 			}
 

@@ -14,16 +14,6 @@ const productSchema = new mongoose.Schema<IProduct>(
 			type: Number,
 			required: [true, "Category must have a quantity"],
 		},
-		cardImage: {
-			path: {
-				type: String,
-				required: [true, "card image path is required"],
-			},
-			name: {
-				type: String,
-				required: [true, "card image name is required"],
-			},
-		},
 		createdAt: {
 			type: Date,
 			default: Date.now(),

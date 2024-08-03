@@ -8,6 +8,9 @@ import restaurantController from "../controllers/restaurant.controller"
 export const restaurantRouter = Router({ mergeParams: true })
 
 restaurantRouter
+	.route("/branch-within").get(restaurantController.getBranchesWithin)
+
+restaurantRouter
 	.route("/")
 	.post(
 		authController.protect,
@@ -15,6 +18,7 @@ restaurantRouter
 		restaurantController.createOne
 	)
 	.get(restaurantController.getAll)
+
 
 restaurantRouter
 	.route("/:id")

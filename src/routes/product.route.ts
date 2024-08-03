@@ -11,8 +11,6 @@ productRouter
 	.post(
 		authController.protect,
 		authController.permittedTo("admin"),
-		uploadImage.uploadImage([{ name: "cardImage", maxCount: 1 }]),
-		uploadImage.createResizeImages("product"),
 		productController.createOne
 	)
 	.get(productController.getAll)
@@ -27,7 +25,5 @@ productRouter
 	.patch(
 		authController.protect,
 		authController.permittedTo("admin"),
-		uploadImage.uploadImage([{ name: "cardImage", maxCount: 1 }]),
-		uploadImage.resizeImages("product"),
 		productController.updateMany
 	)
