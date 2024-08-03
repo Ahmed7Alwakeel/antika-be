@@ -12,6 +12,7 @@ import { productRouter } from "./routes/product.route"
 import { authRouter } from "./routes/auth.route"
 import { userRouter } from "./routes/user.route"
 import { favRouter } from "./routes/favorite.route"
+import { restaurantRouter } from "./routes/restaurant.route";
 
 dotenv.config()
 export const app = express()
@@ -38,6 +39,7 @@ app.use("/api/v1/category", categoryRouter)
 app.use("/api/v1/product", productRouter)
 app.use("/api/v1/user", userRouter)
 app.use("/api/v1/favorite", favRouter)
+app.use("/api/v1/restaurant", restaurantRouter)
 app.all(
 	"*",
 	(req: express.Request, res: express.Response, next: express.NextFunction) => {

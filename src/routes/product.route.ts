@@ -1,39 +1,33 @@
-import { Router } from 'express';
-import uploadImage from '../utils/uploadImage';
-import productController from '../controllers/product.controller';
-import authController from '../controllers/auth.controller';
-import productModel from '../models/product.model';
+import { Router } from "express"
+import uploadImage from "../utils/uploadImage"
+import productController from "../controllers/product.controller"
+import authController from "../controllers/auth.controller"
+import productModel from "../models/product.model"
 
-export const productRouter = Router({ mergeParams: true });
+export const productRouter = Router({ mergeParams: true })
 
 productRouter
-  .route('/')
-  .post(
-    authController.protect,
-    authController.permittedTo('admin'),
-    uploadImage.uploadImage([
-        { name: "bannerImage", maxCount: 1 },
-        { name: "cardImage", maxCount: 1 },
-    ]),
-    uploadImage.createResizeImages("product"),
-    productController.createOne
-  )
-  .get(productController.getAll);
+	.route("/")
+	.post(
+		authController.protect,
+		authController.permittedTo("admin"),
+		uploadImage.uploadImage([{ name: "cardImage", maxCount: 1 }]),
+		uploadImage.createResizeImages("product"),
+		productController.createOne
+	)
+	.get(productController.getAll)
+	.delete(
+		authController.protect,
+		authController.permittedTo("admin"),
+		productController.deleteMany
+	)
 productRouter
-  .route('/:id')
-  .get(productController.getOne)
-  .delete(
-    authController.protect,
-    authController.permittedTo('admin'),
-    productController.deleteOne
-  )
-  .patch(
-    authController.protect,
-    authController.permittedTo('admin'),
-    uploadImage.uploadImage([
-      { name: 'bannerImage', maxCount: 1 },
-      { name: 'cardImage', maxCount: 1 },
-    ]),
-    uploadImage.resizeImages("product"),
-    productController.updateOne
-  );
+	.route("/:id")
+	.get(productController.getOne)
+	.patch(
+		authController.protect,
+		authController.permittedTo("admin"),
+		uploadImage.uploadImage([{ name: "cardImage", maxCount: 1 }]),
+		uploadImage.resizeImages("product"),
+		productController.updateMany
+	)

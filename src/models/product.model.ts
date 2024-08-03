@@ -10,31 +10,9 @@ const productSchema = new mongoose.Schema<IProduct>(
 			unique: true,
 			required: [true, "Category must have a name"],
 		},
-        quantity: {
+        price: {
 			type: Number,
 			required: [true, "Category must have a quantity"],
-		},
-		slug: {
-			type: String,
-			unique: true,
-		},
-		description: {
-			type: String,
-			required: [true, "Category must have a description"],
-		},
-		published: {
-			type: Boolean,
-			default: false,
-		},
-		bannerImage: {
-			path: {
-				type: String,
-				required: [true, "Banner image path is required"],
-			},
-			name: {
-				type: String,
-				required: [true, "Banner image name is required"],
-			},
 		},
 		cardImage: {
 			path: {
@@ -72,10 +50,6 @@ productSchema.virtual("favorites", {
 	localField: "_id",
 })
 
-productSchema.pre("save", function (next) {
-	this.slug = slugify(this.name, { lower: true })
-	next()
-})
 
 productSchema.pre(/^find/, function (this: Query<IProduct, IProduct[]>, next) {
 	this.select("-__v")

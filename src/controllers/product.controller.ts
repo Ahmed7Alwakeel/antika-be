@@ -6,8 +6,8 @@ class Product {
   createOne = APIService.createOne(productModel);
   getAll = APIService.getAll(productModel);
   getOne = APIService.getOne(productModel);
-  deleteOne = APIService.deleteOne(productModel, 'product');
-  updateOne = APIService.updateOne(productModel);
+  deleteMany = APIService.deleteMany(productModel, 'product');
+  updateMany = APIService.updateMany(productModel);
 
 }
 

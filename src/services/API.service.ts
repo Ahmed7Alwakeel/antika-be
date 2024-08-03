@@ -6,6 +6,8 @@ import path from "path"
 import categoryModel from "../models/category.model"
 import productModel from "../models/product.model"
 import APIFiltration from "../utils/apiFiltration"
+import restaurantModel from "../models/Restaurant.model"
+import mongoose from "mongoose"
 
 class API {
 	deleteImageById = (pathName: string, folderName: string) => {
@@ -40,22 +42,26 @@ class API {
 				}
 			}
 			if (req.params.categoryId) req.body.category = req.params.categoryId
-			const data = await Model.create({ ...req.body })
+			const data = await Model.create(
+				Model == productModel ? [...req.body] : { ...req.body }
+			)
 
 			if (Model == productModel || Model == categoryModel) {
 				let pathName = `src/public/images/${
 					Model == productModel ? "product" : "category"
 				}`
-				this.renameImage(
-					path.join(pathName, data.bannerImage.name),
-					path.join(pathName, `${data._id}-banner.jpeg`)
-				)
+				Model == categoryModel &&
+					this.renameImage(
+						path.join(pathName, data.bannerImage.name),
+						path.join(pathName, `${data._id}-banner.jpeg`)
+					)
 				this.renameImage(
 					path.join(pathName, data.cardImage.name),
 					path.join(pathName, `${data._id}-card.jpeg`)
 				)
-				data.bannerImage.name = `${data._id}-banner.jpeg`
 				data.cardImage.name = `${data._id}-card.jpeg`
+				if (Model == categoryModel)
+					data.bannerImage.name = `${data._id}-banner.jpeg`
 				await data.save({ validateBeforeSave: false })
 			}
 
@@ -110,7 +116,7 @@ class API {
 			})
 		})
 
-	deleteOne = (Model: any, folderName: string) =>
+	deleteOne = (Model: any, folderName: string = "") =>
 		catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 			const item = await Model.findById(req.params.id)
 			if (!item) {
@@ -118,7 +124,6 @@ class API {
 			}
 
 			if (item.cardImage) {
-				this.deleteImageById(req.params.id, folderName)
 				this.deleteImageById(req.params.id, folderName)
 			}
 			if (Model == categoryModel) {
@@ -135,23 +140,74 @@ class API {
 			})
 		})
 
+	deleteMany = (Model: any, folderName: string = "") =>
+		catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+			const body = req.body
+			for (let item of body) {
+				const data = await Model.findById(item)
+				if (!data)
+					return next(new AppError("No data found with that ID", "FAIL", 404))
+			}
+			for (let item of body) {
+				this.deleteImageById(item, folderName)
+			}
+			await Model.deleteMany({ _id: { $in: body } })
+
+			res.status(200).json({
+				status: "Success",
+			})
+		})
+
 	updateOne = (Model: any) =>
 		catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-			const data = await Model.findOneAndUpdate(
-				{ _id: req.params.id },
-				req.body,
-				{
-					new: true,
-					projection: { __v: 0 },
-					runValidators: true,
-				}
-			)
+			const data = await Model.findByIdAndUpdate(req.params.id, req.body, {
+				new: true,
+				projection: { __v: 0 },
+				runValidators: true,
+			})
 			if (!data) {
 				return next(new AppError("No data found with that ID", "FAIL", 404))
 			}
 			res.status(200).json({
 				status: "Success",
 				data: { data },
+			})
+		})
+
+	updateMany = (Model: any) =>
+		catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+			const body = req.body
+			let data = []
+
+			for (const item of body) {
+				const update = { ...item.data }
+
+				// Perform the update operation
+				const result = await restaurantModel.findByIdAndUpdate(
+					item.id,
+					update,
+					{
+						new: true,
+						projection: { __v: 0 },
+						runValidators: true,
+					}
+				)
+				if (!result) {
+					return next(new AppError("No data found with that ID", "FAIL", 404))
+				}
+				data.push(result)
+			}
+			// const data = await Model.updateMany({}, req.body, {
+			// 	new: true,
+			// 	projection: { __v: 0 },
+			// 	runValidators: true,
+			// })
+			// if (!data) {
+			// 	return next(new AppError("No data found with that ID", "FAIL", 404))
+			// }
+			res.status(200).json({
+				status: "Success",
+				data,
 			})
 		})
 }

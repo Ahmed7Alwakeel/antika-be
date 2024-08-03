@@ -4,8 +4,9 @@
   "description": "E-commerce node app",
   "author": "",
   "license": "ISC",
+  "main": "./src/server.ts",
   "scripts": {
-    "start": "nodemon src/server.ts",
+    "start": "nodemon",
     "debug": "ndb src/server.ts"
   },
   "devDependencies": {
@@ -62,6 +63,7 @@
     "speakeasy": "^2.0.0",
     "stripe": "^15.4.0",
     "ts-node": "^10.9.2",
+    "typescript": "^5.5.4",
     "xss-clean": "^0.1.4"
   }
 }
