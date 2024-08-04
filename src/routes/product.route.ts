@@ -19,11 +19,11 @@ productRouter
 		authController.permittedTo("admin"),
 		productController.deleteMany
 	)
-productRouter
-	.route("/:id")
-	.get(productController.getOne)
 	.patch(
 		authController.protect,
 		authController.permittedTo("admin"),
 		productController.updateMany
 	)
+productRouter
+	.route("/:id")
+	.get(productController.getOne)

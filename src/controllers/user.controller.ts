@@ -19,7 +19,7 @@ class User {
 
 	editProfile = catchAsync(
 		async (req: Request, res: Response, next: NextFunction) => {
-			if (req.body.password || req.body.passwordConfirm || req.body.email) {
+			if (req.body.password || req.body.passwordConfirm) {
 				return next(new AppError("Unauthorized", "FAIL", 403))
 			}
 			await userModel.findByIdAndUpdate({ _id: req.currentUser.id }, req.body)

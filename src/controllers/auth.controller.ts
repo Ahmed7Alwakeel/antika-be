@@ -98,9 +98,7 @@ class Auth {
 			const resetToken = user?.createPasswordResetToken()
 			try {
 				await user.save({ validateBeforeSave: false })
-				const resetURL = `${req.protocol}://${req.get(
-					"host"
-				)}/api/v1/auth/reset-password/${resetToken}`
+				const resetURL = `${process.env.FRONTEND}/reset-password/${resetToken}`
 				const email = new Email(
 					{ email: user.email, name: user.name },
 					resetURL
@@ -108,7 +106,7 @@ class Auth {
 				await email.sendReset()
 				res.status(200).json({
 					status: "success",
-					message: "Token sent to email!",
+					message: "Reset link sent to email!",
 				})
 			} catch (err) {
 				user.passwordResetToken = undefined

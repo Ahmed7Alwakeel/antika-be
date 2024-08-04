@@ -4,6 +4,7 @@ export default interface IUser extends Document {
 	password: string
 	passwordConfirm?: string
 	email: string
+	address: string
 	mobile: string
 	role: string
 	isActive: boolean

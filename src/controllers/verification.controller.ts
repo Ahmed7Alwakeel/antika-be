@@ -42,7 +42,6 @@ class Verify {
 						verifyUrl
 					)
 					const x = await email.sendVerifyEmail()
-					console.log(await email.sendVerifyEmail())
 
 					res.status(200).json({
 						status: "success",
@@ -81,7 +80,7 @@ class Verify {
 
 				await user.save({ validateBeforeSave: false })
 
-				res.redirect("https://www.google.com")
+				res.redirect(`${process.env.FRONTEND}/login`)
 
 				res.status(200).json({
 					status: "success",

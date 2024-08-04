@@ -32,6 +32,7 @@ class API {
 
 	createOne = (Model: any) =>
 		catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+			let data
 			if (Model == productModel) {
 				if (req.body.category) {
 					const category = await categoryModel.findById(req.body.category)
@@ -41,10 +42,18 @@ class API {
 						)
 				}
 			}
-			if (req.params.categoryId) req.body.category = req.params.categoryId
-			const data = await Model.create(
-				Model == productModel ? [...req.body] : { ...req.body }
-			)
+			if (req.params.categoryId) {
+				// Append the categoryId to each object in req.body array
+				const modifiedData = req.body.map((item: any) => ({
+					...item,
+					category: req.params.categoryId,
+				}))
+
+				// Create documents in the database
+				data = await Model.create(modifiedData)
+			} else {
+				data = await Model.create({ ...req.body })
+			}
 
 			if (Model == categoryModel) {
 				let pathName = `src/public/images/category`
@@ -123,12 +132,9 @@ class API {
 				this.deleteImageById(req.params.id, folderName)
 			}
 			if (Model == categoryModel) {
-				await productModel.updateMany(
-					{
-						category: item.id,
-					},
-					{ $set: { category: null } }
-				)
+				await productModel.deleteMany({
+					category: item.id,
+				})
 			}
 			await Model.findByIdAndDelete(req.params.id)
 			res.status(200).json({
@@ -138,15 +144,20 @@ class API {
 
 	deleteMany = (Model: any, folderName: string = "") =>
 		catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-			const body = req.body
+			const { ids } = req.query
+			let body: string[] = []
+			if (typeof ids === "string") {
+				// ids is a single string
+				body = ids.split(",")
+			}
 			for (let item of body) {
 				const data = await Model.findById(item)
 				if (!data)
 					return next(new AppError("No data found with that ID", "FAIL", 404))
 			}
-			for (let item of body) {
-				this.deleteImageById(item, folderName)
-			}
+			// for (let item of body) {
+			// 	this.deleteImageById(item, folderName)
+			// }
 			await Model.deleteMany({ _id: { $in: body } })
 
 			res.status(200).json({
@@ -174,33 +185,26 @@ class API {
 		catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 			const body = req.body
 			let data = []
+			if (req.params.categoryId) {
+				const category = await categoryModel.findById(req.params.categoryId)
+				if (!category)
+					return next(
+						new AppError("No data category with that ID", "FAIL", 404)
+					)
+			}
 
 			for (const item of body) {
-				const update = { ...item.data }
-
-				// Perform the update operation
-				const result = await restaurantModel.findByIdAndUpdate(
-					item.id,
-					update,
-					{
-						new: true,
-						projection: { __v: 0 },
-						runValidators: true,
-					}
-				)
+				const update = { ...item }
+				const result = await productModel.findByIdAndUpdate(item.id, update, {
+					new: true,
+					projection: { __v: 0 },
+					runValidators: true,
+				})
 				if (!result) {
 					return next(new AppError("No data found with that ID", "FAIL", 404))
 				}
 				data.push(result)
 			}
-			// const data = await Model.updateMany({}, req.body, {
-			// 	new: true,
-			// 	projection: { __v: 0 },
-			// 	runValidators: true,
-			// })
-			// if (!data) {
-			// 	return next(new AppError("No data found with that ID", "FAIL", 404))
-			// }
 			res.status(200).json({
 				status: "Success",
 				data,

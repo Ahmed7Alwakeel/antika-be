@@ -9,6 +9,10 @@ const userSchema = new mongoose.Schema<IUser>({
 		type: String,
 		required: [true, "Name is missing"],
 	},
+	address: {
+		type: String,
+		required: [true, "address is missing"],
+	},
 	email: {
 		type: String,
 		unique: true,
@@ -50,6 +54,7 @@ const userSchema = new mongoose.Schema<IUser>({
 		type: Boolean,
 		default: false,
 	},
+
 	verifyToken: String,
 	passwordResetToken: String,
 	passwordResetExpires: Date,
