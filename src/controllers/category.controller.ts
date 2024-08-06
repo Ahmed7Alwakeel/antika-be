@@ -3,7 +3,7 @@ import APIService from '../services/API.service';
 class Category {
 
   createOne = APIService.createOne(categoryModel);
-  getAll = APIService.getAll(categoryModel);
+  getAll = APIService.getAll(categoryModel,"products");
   getOne = APIService.getOne(categoryModel, 'products');
   deleteOne = APIService.deleteOne(categoryModel, 'category');
   updateOne = APIService.updateOne(categoryModel);

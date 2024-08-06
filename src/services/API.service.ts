@@ -76,7 +76,7 @@ class API {
 			})
 		})
 
-	getAll = (Model: any) =>
+	getAll = (Model: any, populateOptions?: string, select?: string) =>
 		catchAsync(async (req: Request, res: Response) => {
 			let filter = {}
 			if (req.params.categoryId) filter = { category: req.params.categoryId }
@@ -84,8 +84,9 @@ class API {
 				.filter()
 				.sort()
 				.paginate()
-
-			let data = await apiFiltration.query
+			let query = apiFiltration.query
+			if (populateOptions) query = apiFiltration.query.populate(populateOptions)
+			const data = await query
 
 			const metaData = {
 				page: apiFiltration.metaData().page,
@@ -99,7 +100,7 @@ class API {
 
 			res.status(200).json({
 				status: "Success",
-				data: { data },
+				data,
 				metaData,
 			})
 		})

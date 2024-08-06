@@ -1,6 +1,7 @@
 import mongoose, { Query } from "mongoose"
 import ICategory from "../interfaces/category.interface"
 import slugify from "slugify"
+import IProduct from "../interfaces/product.interface"
 
 const categorySchema = new mongoose.Schema<ICategory>(
 	{

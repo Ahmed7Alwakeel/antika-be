@@ -34,7 +34,7 @@ class Restaurant {
 			const latitude = parseFloat(lat.trim());
 	
 			// Radius in radians
-			const radius = 20 / 6378.1; // 20km converted to radians
+			const radius = 22 / 6378.1; // 20km converted to radians
 	
 			// Perform the geospatial query
 			const data = await restaurantModel.find({
