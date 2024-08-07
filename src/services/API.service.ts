@@ -79,6 +79,7 @@ class API {
 	getAll = (Model: any, populateOptions?: string, select?: string) =>
 		catchAsync(async (req: Request, res: Response) => {
 			let filter = {}
+			
 			if (req.params.categoryId) filter = { category: req.params.categoryId }
 			const apiFiltration = new APIFiltration(Model.find(filter), req.query)
 				.filter()
@@ -97,7 +98,6 @@ class API {
 					) || 1,
 				results: data.length,
 			}
-
 			res.status(200).json({
 				status: "Success",
 				data,

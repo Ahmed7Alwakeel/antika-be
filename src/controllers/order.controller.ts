@@ -3,10 +3,9 @@ import { catchAsync } from "../utils/catchAsync"
 import Stripe from "stripe"
 import AppError from "../utils/appError"
 import orderModel from "../models/order.model"
-import IProduct from "../interfaces/product.interface"
 import restaurantModel from "../models/restaurant.model"
-import productModel from "../models/product.model"
 import APIService from "../services/API.service"
+import { pushNotification } from "../middlewares/pusher.middleware"
 
 type CheckoutSessionRequest = {
 	cartItems: {
@@ -40,7 +39,7 @@ class Order {
 			const line_item: Stripe.Checkout.SessionCreateParams.LineItem = {
 				price_data: {
 					currency: "gbp",
-					unit_amount: item?.price,
+					unit_amount: item?.price * 100,
 					product_data: {
 						name: item.name,
 					},
@@ -57,7 +56,6 @@ class Order {
 	createCheckoutSession = catchAsync(
 		async (req: Request, res: Response, next: NextFunction) => {
 			const body = req.body
-			console.log(body)
 			const restaurant = await restaurantModel.findById(body.restaurant)
 			if (!restaurant)
 				return next(new AppError("Restaurant not found", "Fail", 404))
@@ -82,9 +80,13 @@ class Order {
 			if (!session?.url) {
 				return next(new AppError("Something went wrong", "Fail", 500))
 			}
+			await pushNotification(
+				`order`,
+				`New order created at ${restaurant.area} branch, Click to show order lists`,
+				"/orders"
+			)
 
 			await newOrder.save()
-
 			res.status(200).json({
 				status: "Success",
 				url: session.url,
@@ -106,7 +108,7 @@ class Order {
 						display_name: "Delivery",
 						type: "fixed_amount",
 						fixed_amount: {
-							amount: deliveryPrice,
+							amount: deliveryPrice * 100,
 							currency: "gbp",
 						},
 					},
@@ -117,7 +119,7 @@ class Order {
 				orderId,
 				restaurantId,
 			},
-			success_url: `${this.FRONTEND}/order-status?order=${orderId}`,
+			success_url: `${this.FRONTEND}/order-status/${orderId}`,
 			cancel_url: `${this.FRONTEND}/detail/${restaurantId}?cancelled=true`,
 		})
 
@@ -143,7 +145,7 @@ class Order {
 					return res.status(404).json({ message: "Order not found" })
 				}
 
-				order.totalAmount = event.data.object.amount_total
+				order.totalAmount = (event.data.object.amount_total as number) / 100
 				order.status = "paid"
 
 				await order.save()

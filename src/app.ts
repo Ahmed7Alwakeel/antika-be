@@ -1,6 +1,7 @@
 import express from "express"
-import "dotenv/config";
+import "dotenv/config"
 import rateLimit from "express-rate-limit"
+import Pusher from "pusher"
 import helmet from "helmet"
 import cors from "cors"
 import mongoSanitize from "express-mongo-sanitize"
@@ -18,15 +19,32 @@ import { orderRouter } from "./routes/order.route"
 export const app = express()
 
 // CORS configuration
-app.use(cors())
+app.use(cors({}))
 
-app.use("/api/v1/order/checkout/webhook", express.raw({ type: "*/*" }));
+const pusher = new Pusher({
+	appId: process.env.PUSHER_APP_ID!,
+	key: process.env.PUSHER_KEY!,
+	secret: process.env.PUSHER_SECRET!,
+	cluster: "eu",
+	useTLS: true,
+})
+
 app.use(
 	helmet({
 		hsts: false,
 		crossOriginResourcePolicy: false, //for images at frontend
 	})
 )
+app.post("/api/messages", async (req, res) => {
+	await pusher.trigger("order", "message", {
+		message: "test",
+	})
+	console.log(req.body)
+
+	res.json([])
+})
+
+app.use("/api/v1/order/checkout/webhook", express.raw({ type: "*/*" }))
 const limiter = rateLimit({
 	max: 1000,
 	windowMs: 60 * 60 * 1000,
