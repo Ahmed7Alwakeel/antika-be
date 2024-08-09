@@ -79,15 +79,13 @@ class Verify {
 				user.verifyToken = undefined
 
 				await user.save({ validateBeforeSave: false })
-
-				res.redirect(`${process.env.FRONTEND}/login`)
-
+				res.redirect(`http://localhost:5173/login?verified=true`)
 				res.status(200).json({
 					status: "success",
 					message: "Email verified successfully",
 				})
 			}
-			return next(new AppError("Invalid token or OTP", "FAIL", 400))
+			res.redirect(`http://localhost:5173/login?verified=false`)
 		}
 	)
 }

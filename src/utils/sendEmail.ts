@@ -12,7 +12,7 @@ export class Email {
 	code?: string
 
 	constructor(user: any, url: string, code?: string) {
-		this.name = user.name.split(" ")[0]
+		this.name = user?.name?.split(" ")[0]
 		this.to = user.email
 		this.url = url
 		this.from = process.env.EMAIL_SENDER as string
@@ -62,8 +62,6 @@ export class Email {
 	}
 	sendVerifyEmail = async () => {
 		try{
-
-			console.log("test")
 			await this.send("verifyEmail", "Verify email")
 		}
 		catch(error){

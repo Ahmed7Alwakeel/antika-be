@@ -79,7 +79,8 @@ class API {
 	getAll = (Model: any, populateOptions?: string, select?: string) =>
 		catchAsync(async (req: Request, res: Response) => {
 			let filter = {}
-			
+			if (req.query.categoryName) req.query["name"]=(req.query.categoryName as string).split(",")
+				delete req.query.categoryName
 			if (req.params.categoryId) filter = { category: req.params.categoryId }
 			const apiFiltration = new APIFiltration(Model.find(filter), req.query)
 				.filter()
