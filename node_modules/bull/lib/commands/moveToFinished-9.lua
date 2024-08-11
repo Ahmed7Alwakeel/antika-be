@@ -84,6 +84,7 @@ end
 
 -- Includes
 --- @include "includes/removeLock"
+--- @include "includes/removeDebounceKeyIfNeeded"
 
 if rcall("EXISTS", KEYS[3]) == 1 then -- // Make sure job exists
     local errorCode = removeLock(KEYS[3], KEYS[8], ARGV[5], ARGV[1])
@@ -95,6 +96,9 @@ if rcall("EXISTS", KEYS[3]) == 1 then -- // Make sure job exists
     local numRemovedElements = rcall("LREM", KEYS[1], -1, ARGV[1])
 
     if numRemovedElements < 1 then return -3 end
+
+    local debounceId = rcall("HGET", KEYS[3], "deid")
+    removeDebounceKeyIfNeeded(ARGV[9], debounceId)
 
     -- Remove job?
     local keepJobs = cmsgpack.unpack(ARGV[6])

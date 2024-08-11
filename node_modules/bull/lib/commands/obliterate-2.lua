@@ -18,6 +18,10 @@ local maxCount = tonumber(ARGV[1])
 local baseKey = KEYS[2]
 
 local rcall = redis.call
+
+-- Includes
+--- @include "includes/removeDebounceKey"
+
 local function getListItems(keyName, max)
     return rcall('LRANGE', keyName, 0, max - 1)
 end
@@ -26,23 +30,24 @@ local function getZSetItems(keyName, max)
     return rcall('ZRANGE', keyName, 0, max - 1)
 end
 
-local function removeJobs(parentKey, keys)
+local function removeJobs(baseKey, keys)
     for i, key in ipairs(keys) do
-        rcall("DEL", baseKey .. key)
-        rcall("DEL", baseKey .. key .. ':logs')
+        local jobKey = baseKey .. key
+        rcall("DEL", jobKey, jobKey .. ':logs')
+        removeDebounceKey(baseKey, jobKey)
     end
     maxCount = maxCount - #keys
 end
 
 local function removeListJobs(keyName, max)
     local jobs = getListItems(keyName, max)
-    removeJobs(keyName, jobs)
+    removeJobs(baseKey, jobs)
     rcall("LTRIM", keyName, #jobs, -1)
 end
 
 local function removeZSetJobs(keyName, max)
     local jobs = getZSetItems(keyName, max)
-    removeJobs(keyName, jobs)
+    removeJobs(baseKey, jobs)
     if (#jobs > 0) then rcall("ZREM", keyName, unpack(jobs)) end
 end
 
@@ -65,7 +70,7 @@ if (#activeJobs > 0) then
 end
 
 removeLockKeys(activeJobs)
-removeJobs(activeKey, activeJobs)
+removeJobs(baseKey, activeJobs)
 rcall("LTRIM", activeKey, #activeJobs, -1)
 if (maxCount <= 0) then return 1 end
 
