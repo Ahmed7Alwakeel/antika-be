@@ -119,8 +119,8 @@ class Order {
 				orderId,
 				restaurantId,
 			},
-			success_url: `${this.FRONTEND}/order-status/${orderId}`,
-			cancel_url: `${this.FRONTEND}/detail/${restaurantId}?cancelled=true`,
+			success_url: `${this.FRONTEND}?order-status=${orderId}`,
+			cancel_url: `${this.FRONTEND}?cancelled=true`,
 		})
 
 		return sessionData
