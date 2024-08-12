@@ -4,7 +4,7 @@ import authController from "../controllers/auth.controller"
 
 export const dashboardRouter = Router()
 
-// dashboardRouter.use(authController.protect, authController.permittedTo("admin"))
+dashboardRouter.use(authController.protect, authController.permittedTo("admin"))
 dashboardRouter.get("/monthly-orders", dashboardController.getOrdersOfTheMonth)
 dashboardRouter.get(
 	"/products-orders",
