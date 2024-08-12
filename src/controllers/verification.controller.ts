@@ -79,13 +79,13 @@ class Verify {
 				user.verifyToken = undefined
 
 				await user.save({ validateBeforeSave: false })
-				res.redirect(`http://localhost:5173/login?verified=true`)
+				res.redirect(`https://antika-website.onrender.com/login?verified=true`)
 				res.status(200).json({
 					status: "success",
 					message: "Email verified successfully",
 				})
 			}
-			res.redirect(`http://localhost:5173/login?verified=false`)
+			res.redirect(`https://antika-website.onrender.com/login?verified=false`)
 		}
 	)
 }
