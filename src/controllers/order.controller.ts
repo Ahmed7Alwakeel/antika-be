@@ -109,7 +109,7 @@ class Order {
 						type: "fixed_amount",
 						fixed_amount: {
 							amount: deliveryPrice * 100,
-							currency: "usd",
+							currency: "USD",
 						},
 					},
 				},
