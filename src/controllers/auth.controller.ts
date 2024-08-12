@@ -34,6 +34,7 @@ class Auth {
 				mobile: req.body.mobile,
 				password: req.body.password,
 				passwordConfirm: req.body.passwordConfirm,
+				address: req.body.address,
 				role: req.body.role,
 			})
 			const email = new Email(

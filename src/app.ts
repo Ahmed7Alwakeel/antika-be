@@ -21,6 +21,7 @@ export const app = express()
 
 // CORS configuration
 app.use(cors({}))
+app.set('trust proxy', 1);
 
 const pusher = new Pusher({
 	appId: process.env.PUSHER_APP_ID!,
