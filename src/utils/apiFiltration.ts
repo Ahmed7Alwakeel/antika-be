@@ -71,7 +71,7 @@ export default class APIFiltration {
 			: 1
 		const limit = (this.queryString as { limit: string }).limit
 			? +(this.queryString as { limit: string }).limit * 1
-			: 30
+			: 50
 		const skip = (page - 1) * limit
 		return {
 			page,
