@@ -6,10 +6,11 @@
   "license": "ISC",
   "main": "./src/server.ts",
   "scripts": {
-    "start": "concurrently \"nodemon\" \"npm run stripe\"",
+    "dev": "concurrently \"nodemon\" \"npm run stripe\"",
     "stripe": "stripe listen --forward-to localhost:4000/api/order/checkout/webhook",
-    "debug": "ndb src/server.ts",
-    "build": "npm install && npx tsc"
+    "build": "npm install && npx tsc",
+    "start": "node dist/server.js",
+    "debug": "ndb src/server.ts"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
