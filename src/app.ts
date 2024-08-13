@@ -17,6 +17,7 @@ import { restaurantRouter } from "./routes/restaurant.route"
 import { orderRouter } from "./routes/order.route"
 import { dashboardRouter } from "./routes/dashboard.route"
 import path from "path"
+import compression from "compression"
 
 export const app = express()
 
@@ -24,6 +25,7 @@ export const app = express()
 app.use(cors({}))
 app.set('trust proxy', 1);
 app.set('views', path.join(__dirname, 'views'));
+app.set('views', './src.views')
 app.set('view engine', 'pug');
 
 const pusher = new Pusher({
@@ -40,15 +42,9 @@ app.use(
 		crossOriginResourcePolicy: false, //for images at frontend
 	})
 )
-app.post("/api/messages", async (req, res) => {
-	await pusher.trigger("order", "message", {
-		message: "test",
-	})
-	console.log(req.body)
 
-	res.json([])
-})
-
+//compress all responses
+app.use(compression())
 app.use("/api/v1/order/checkout/webhook", express.raw({ type: "*/*" }))
 const limiter = rateLimit({
 	max: 1000,
