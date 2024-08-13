@@ -33,6 +33,17 @@ app.use(
 )
 //compress all responses
 app.use(compression())
+
+
+
+//for redirect to the frontend
+app.use(express.static(path.join(__dirname, 'build')));
+
+// Handle all other routes with index.html
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
+
 app.use("/api/v1/order/checkout/webhook", express.raw({ type: "*/*" }))
 const limiter = rateLimit({
 	max: 1000,
