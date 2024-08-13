@@ -16,12 +16,15 @@ import { favRouter } from "./routes/favorite.route"
 import { restaurantRouter } from "./routes/restaurant.route"
 import { orderRouter } from "./routes/order.route"
 import { dashboardRouter } from "./routes/dashboard.route"
+import path from "path"
 
 export const app = express()
 
 // CORS configuration
 app.use(cors({}))
 app.set('trust proxy', 1);
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
 
 const pusher = new Pusher({
 	appId: process.env.PUSHER_APP_ID!,
