@@ -37,11 +37,11 @@ app.use(compression())
 
 
 //for redirect to the frontend
-app.use(express.static(path.join(__dirname, 'build')));
+app.use(express.static(path.join(__dirname, 'dist')));
 
 // Handle all other routes with index.html
 app.get('/*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 app.use("/api/v1/order/checkout/webhook", express.raw({ type: "*/*" }))
