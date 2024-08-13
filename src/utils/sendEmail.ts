@@ -3,7 +3,6 @@ import pug from "pug"
 import { htmlToText } from "html-to-text"
 
 //SendGrid send with SMTP protocol with nodemailer
-
 export class Email {
 	name: string
 	to: string
