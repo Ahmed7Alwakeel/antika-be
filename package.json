@@ -9,7 +9,7 @@
     "dev": "concurrently \"nodemon\" \"npm run stripe\"",
     "stripe": "stripe listen --forward-to localhost:4000/api/order/checkout/webhook",
     "build": "npm install && npx tsc && npm run copy-views",
-    "copy-views": "copyfiles -u 1 src/views/**/* dist/views",
+    "copy-views": "copyfiles -u 1 src/views/**/* dist/",
     "debug": "ndb src/server.ts",
     "start": "node dist/server.js"
   },
