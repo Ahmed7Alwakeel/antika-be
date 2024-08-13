@@ -9,7 +9,7 @@
     "dev": "concurrently \"nodemon\" \"npm run stripe\"",
     "stripe": "stripe listen --forward-to localhost:4000/api/order/checkout/webhook",
     "build": "npm install && webpack --mode production",
-    "start": "node dist/server.js",
+    "start": "node dist/bundle.js",
     "debug": "ndb src/server.ts"
   },
   "devDependencies": {
