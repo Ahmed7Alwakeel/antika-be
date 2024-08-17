@@ -8,8 +8,9 @@
   "scripts": {
     "dev": "concurrently \"nodemon\" \"npm run stripe\"",
     "stripe": "stripe listen --forward-to localhost:4000/api/order/checkout/webhook",
-    "build": "npm install && npx tsc && npm run copy-views",
+    "build": "npm install && npx tsc && npm run copy-public && npm run copy-views",
     "copy-views": "copyfiles -u 1 src/views/**/* dist/",
+    "copy-public": "cpx \"src/public/**/*\" dist/public",
     "debug": "ndb src/server.ts",
     "start": "node dist/server.js"
   },
@@ -18,6 +19,7 @@
     "@types/hpp": "^0.2.6",
     "@types/request": "^2.48.12",
     "copyfiles": "^2.4.1",
+    "cpx": "^1.5.0",
     "nodemon": "^3.1.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
